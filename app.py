@@ -1,5 +1,8 @@
+#
+# Main app APIs
+#
 from flask import Flask, jsonify, request, Response
-import helper
+import helper as Helper
 
 app = Flask(__name__)
 store = {}
@@ -38,11 +41,11 @@ def storeDelete(key):
 @app.route('/kv-store/<key>', methods=['PUT', 'POST'])
 def storePut(key):
 	val = request.form.to_dict()['val'] if 'val' in request.form.to_dict() else None
-	if not request.form or helper.isInvalid(key) or helper.isInvalid(val):
-		return jsonify({'result':'Error','msg':'Key not valid'})
 	
-	response, st = {'replaced':'False', 'msg':''}, 200
+	if not request.form or Helper.isInvalid(key,val):
+		return jsonify({'result':'Error','msg':'Key not valid'})
 
+	response, st = {'replaced':'False', 'msg':''}, 200
 	if key not in store:
 		response['msg'] = 'New key created'
 	else:
