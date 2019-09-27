@@ -2,6 +2,10 @@
 # Helper functions
 #
 import sys, re
+from flask import Flask, Response
+
+def createResponse(o, s=200):
+  return Response(str(o).replace("\'", "\""),status=s)
 
 def isInvalid(key,val):
   print('isInvalid',key,val)

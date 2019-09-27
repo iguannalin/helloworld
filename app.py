@@ -1,7 +1,7 @@
 #
 # Main app APIs
 #
-from flask import Flask, jsonify, request, Response
+from flask import Flask, request
 import helper as Helper
 
 app = Flask(__name__)
@@ -25,37 +25,39 @@ def getWithMsg():
 #
 @app.route('/kv-store/<key>', methods=['GET'])
 def storeGet(key):
+	response, st = "", 200
 	if key not in store:
-		return Response("{'result':'Error','msg':'Key does not exist'}", status=404)
+		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
 	else:
-		return Response(f"{{'result':'Success','value':{store[key]}}}")
+		response = f"{{'result':'Success','value':{store[key]}}}"
+	return Helper.createResponse(response, st)
 
 @app.route('/kv-store/<key>', methods=['DELETE'])
 def storeDelete(key):
+	response, st = "", 200
 	if key not in store:
-		return Response("{'result':'Error','msg':'Key does not exist'}", status=404)
+		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
 	else:
 		del store[key]
-		return Response("{'result':'Success'}")
+		response = "{'result':'Success'}"
+	return Helper.createResponse(response, st)
 
 @app.route('/kv-store/<key>', methods=['PUT', 'POST'])
 def storePut(key):
+	response, st = "", 200
 	val = request.form.to_dict()['val'] if 'val' in request.form.to_dict() else None
 	
-	if not request.form or Helper.isInvalid(key,val):
-		return jsonify({'result':'Error','msg':'Key not valid'})
-
-	response, st = {'replaced':'False', 'msg':''}, 200
-	if key not in store:
-		response['msg'] = 'New key created'
+	if not val:
+		response = "{'result':'Error','msg':'No value provided'}"
+	elif Helper.isInvalid(key,val) or not request.form:
+		response = "{'result':'Error','msg':'Key not valid'}"
+	elif key not in store:
+		response, st = "{'replaced':'False', 'msg':'New key created'}", 201
+		store[key] = val
 	else:
-		st = 201
-		response['replaced'] = 'True'
-		response['msg'] = 'Value of existing key replaced'
-
-	store[key] = val
-	return Response(str(response),status=st)
-
+		response, st = "{'replaced':'True', 'msg':'Value of existing key replaced'}", 201
+		store[key] = val
+	return Helper.createResponse(response,st)
 
 if __name__ == '__main__':
 	app.run(port=8080, debug=True)
