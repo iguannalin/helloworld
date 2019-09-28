@@ -13,7 +13,7 @@ hostname = 'localhost'  #Windows and Mac users can change this to the docker vm 
 sudo = ''
 container = 'app'
 
-TEST_STATUS_CODES_ONLY = True
+TEST_STATUS_CODES_ONLY = False
 
 def start_nodes(sudo, hostname, container):
     exec_string_main  = sudo + " docker run -p 8083:8080 --net=mynet --ip=10.0.0.20 -e IP=10.0.0.20 -e PORT=8080 -d %s" % container
@@ -90,7 +90,9 @@ class TestHW2(unittest.TestCase):
         self.assertEqual(d['replaced'],'False')
         self.assertEqual(d['msg'],'New key created')
         if not TEST_STATUS_CODES_ONLY:
+            print('TEST A')
             print res
+            print('TEST A')
             print res.text
 
     def test_b_put_existing_key(self):
@@ -218,10 +220,13 @@ class TestHW2(unittest.TestCase):
         time.sleep(3)
         res = requests.put(self.node_address[1]+'/kv-store/'+self.key1,data= {'val':'foo'})
         print "res"
+        print('TEST S')
         print res
         print "res.text"
+        print('TEST S')
         print res.text
         print "res.content"
+        print('TEST S')
         print res.content
         self.assertTrue(res.status_code in [500, '500'])
 

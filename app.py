@@ -29,7 +29,7 @@ def storeGet(key):
 	if key not in store:
 		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
 	else:
-		response = f"{{'result':'Success','value':{store[key]}}}"
+		response = "{'result':'Success','value':'"+str(store[key]+"'}")
 	return Helper.createResponse(response, st)
 
 @app.route('/kv-store/<key>', methods=['DELETE'])
