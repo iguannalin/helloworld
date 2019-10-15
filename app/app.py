@@ -3,16 +3,19 @@
 #
 from flask import Flask, request
 import helper as Helper
+import os
 
 app = Flask(__name__)
 store = {}
-
+nodeIP = os.getenv('IP')
+nodeID = os.getenv('IP')[-1:]
+host = 'localhost'
 #
 # General
 #
 @app.route('/hello/')
 def hello():
-	return 'Hello world!'
+	return 'Hello world! This is ' + nodeID
 
 @app.route('/echo/')
 def getWithMsg():
@@ -25,6 +28,9 @@ def getWithMsg():
 #
 @app.route('/kv-store/<key>', methods=['GET'])
 def storeGet(key):
+	if nodeID != '0':
+		return redirect('http://'+host+':8083/hello')
+
 	response, st = "", 200
 	if key not in store:
 		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
@@ -34,6 +40,9 @@ def storeGet(key):
 
 @app.route('/kv-store/<key>', methods=['DELETE'])
 def storeDelete(key):
+	if nodeID != '0':
+		return redirect('http://'+host+':8083')
+
 	response, st = "", 200
 	if key not in store:
 		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
@@ -44,6 +53,9 @@ def storeDelete(key):
 
 @app.route('/kv-store/<key>', methods=['PUT', 'POST'])
 def storePut(key):
+	if nodeID != '0':
+		return redirect('http://'+host+':8083')
+
 	response, st = "", 200
 	val = request.form.to_dict()['val'] if 'val' in request.form.to_dict() else None
 	
