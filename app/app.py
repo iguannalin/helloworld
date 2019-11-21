@@ -3,22 +3,29 @@
 #
 from flask import Flask, request
 import helper as Helper
+import store as Store
 import os
 
-app = Flask(__name__)
 store = {}
-nodeIP = os.getenv('IP')
-nodeID = os.getenv('IP')[-1:]
-host = 'localhost'
+nodePort = 8080 if not os.getenv('PORT') else os.getenv('PORT')
+nodeIP = '0.0.0.0' if not os.getenv('IP') else os.getenv('IP')
+nodeID = nodeIP[-1:]
+host = nodeIP
+
+app = Flask(__name__)
 #
 # General
 #
 @app.route('/hello/')
 def hello():
-	return 'Hello world! This is ' + nodeID
+	return 'Hello world!'
+
+@app.route('/whoami/')
+def getID():
+	return  'This is ' + nodeID
 
 @app.route('/echo/')
-def getWithMsg():
+def simpleGet():
 	if not request.args.get('msg'):
 		return ''
 	return request.args.get('msg')
@@ -28,9 +35,6 @@ def getWithMsg():
 #
 @app.route('/kv-store/<key>', methods=['GET'])
 def storeGet(key):
-	if nodeID != '0':
-		return redirect('http://'+host+':8083/hello')
-
 	response, st = "", 200
 	if key not in store:
 		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
@@ -40,9 +44,6 @@ def storeGet(key):
 
 @app.route('/kv-store/<key>', methods=['DELETE'])
 def storeDelete(key):
-	if nodeID != '0':
-		return redirect('http://'+host+':8083')
-
 	response, st = "", 200
 	if key not in store:
 		response, st = "{'result':'Error','msg':'Key does not exist'}", 404
@@ -72,4 +73,4 @@ def storePut(key):
 	return Helper.createResponse(response,st)
 
 if __name__ == '__main__':
-	app.run(port=8080, debug=True)
+	app.run(host=nodeIP, port=nodePort, debug=True)
