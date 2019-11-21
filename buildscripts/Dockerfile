@@ -4,4 +4,4 @@ ENV FLASK_APP ../app/app.py
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "-p", "8080"]
+CMD ["python", "-m", "flask", "run"]
