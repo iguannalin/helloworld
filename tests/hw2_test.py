@@ -9,8 +9,8 @@ import time
 import os
 
 
-hostname = 'localhost'  #Windows and Mac users can change this to the docker vm ip
-sudo = ''
+hostname = '10.0.0.20'  #Windows and Mac users can change this to the docker vm ip
+sudo = 'sudo'
 container = 'app'
 
 TEST_STATUS_CODES_ONLY = False
@@ -135,7 +135,7 @@ class TestHW2(unittest.TestCase):
         d = res.json()
         self.assertEqual(d['result'],'Error')
         self.assertEqual(d['msg'],'Key does not exist')
-#
+#'''
     def test_h_put_deleted_key(self):
         res = requests.put(self.node_address[1]+'/kv-store/foo',data= {'val':'bart'})
         self.assertTrue(res.status_code, [201, '201'])
